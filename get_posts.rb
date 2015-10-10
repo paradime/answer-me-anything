@@ -8,7 +8,7 @@ require 'logger'
 @opts = {
   username: @author,
   password: 'kenthacks',
-  post_title: 'throwaway post do not upboat'
+  post_title: 'We wrote a bot in 2 hours at Kent Hack Enough that will answer any question. AMA'
 }
 @already_commented = []
 
@@ -35,7 +35,8 @@ def make_comment(comment)
 end
 
 def lmgtfy(question)
-  URI.encode("http://www.lmgtfy.com/?q=#{question}")
+  possibilities = ['http://www.lmgtfy.com', 'https://lmddgtfy.net', 'http://letmebingthatforyou.com']
+  URI.encode("#{possibilities.sample}/?q=#{question}")
 end
 
 def have_commented?(comment)
@@ -80,3 +81,5 @@ def search_for_comments
     @logger.info('Done sleeping')
   end
 end
+
+search_for_comments
