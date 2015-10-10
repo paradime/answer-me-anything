@@ -11,8 +11,9 @@ Bitly.use_api_version_3
 @opts = {
   username: @author,
   password: 'kenthacks',
-  post_title: 'throwaway post do not upboat'
+#  post_title: 'throwaway post do not upboat'
 #  post_title: 'We wrote a bot in 2 hours at Kent Hack Enough that will answer any question. AMA'
+  post_title: 'We wrote a bot for Kent Hack Enough that will answer all questions. AUA'
 }
 
 @client_id = 'answermeanything'
@@ -104,4 +105,4 @@ def search_for_comments
   end
 end
 
-#search_for_comments
+search_for_comments
