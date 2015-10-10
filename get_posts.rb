@@ -70,13 +70,13 @@ end
 def search_for_comments
   bot = create_bot(@opts[:username], @opts[:password])
   populate_already_commented bot
-  logger.info("Already commented: #{@already_commented}")
+  @logger.info("Already commented: #{@already_commented}")
   while true
     # SidekiqQueue.perform_async bot, @opts
     process_comments(bot, @opts)
-    logger.info('Processing comments')
-    logger.info('Sleeping')
+    @logger.info('Processing comments')
+    @logger.info('Sleeping')
     sleep 60
-    logger.info('Done sleeping')
+    @logger.info('Done sleeping')
   end
 end
