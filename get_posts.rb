@@ -1,5 +1,9 @@
 require 'pry'
 require 'redditkit'
+require 'logger'
+
+@logger = Logger.new('reddit.log')
+@logger.level = Logger::WARN
 
 @author = 'answer-me-anything'
 @opts = {
@@ -12,6 +16,7 @@ require 'redditkit'
 def create_bot(username, password)
   RedditKit.sign_in username, password
   RedditKit::Client.new username, password
+  @logger.info('user signed in')
 end
 
 def get_comments_on_post(user, post_title=nil)
@@ -26,6 +31,7 @@ end
 
 def make_comment(comment)
   question = comment.body
+  @logger.info("Making comment for #{question}")
   RedditKit.submit_comment comment, lmgtfy(question)
 end
 
@@ -65,11 +71,13 @@ end
 def search_for_comments
   bot = create_bot(@opts[:username], @opts[:password])
   populate_already_commented bot
+  logger.info("Already commented: #{@already_commented}")
   while true
     # SidekiqQueue.perform_async bot, @opts
     process_comments(bot, @opts)
-    puts 'processed comments, sleeping'
-    sleep 10
-    puts 'done sleeping'
+    logger.info('Processing comments')
+    logger.info('Sleeping')
+    sleep 60
+    logger.info('Done sleeping')
   end
 end
