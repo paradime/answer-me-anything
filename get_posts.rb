@@ -38,6 +38,17 @@ def process_comments(opts = {})
   end
 end
 
+def have_commented(comment)
+  replies_listing = comment.attributes[:replies]
+  return [] if replies_listing.empty?
+  replies_array = replies_listing[:data][:children]
+  comment_objects ||= replies_array.map do |comment|
+    RedditKit::Comment.new(comment)
+  end
+  comment_objects.any?{|x| x.author == 'answer-me-anything'}
+end
+
+
 # TODO sanitize comment input
 # look at body of every comment
 # if there is not already a comment by our bot
