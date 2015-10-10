@@ -3,7 +3,6 @@ require 'redditkit'
 require 'logger'
 
 @logger = Logger.new('reddit.log')
-@logger.level = Logger::WARN
 
 @author = 'answer-me-anything'
 @opts = {
