@@ -14,8 +14,8 @@ require 'logger'
 
 def create_bot(username, password)
   RedditKit.sign_in username, password
-  RedditKit::Client.new username, password
   @logger.info('user signed in')
+  RedditKit::Client.new username, password
 end
 
 def get_comments_on_post(user, post_title=nil)
