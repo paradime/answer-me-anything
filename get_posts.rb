@@ -1,6 +1,14 @@
 require 'pry'
 require 'redditkit'
 
+@author = 'answer-me-anything'
+@opts = {
+  username: @author,
+  password: 'kenthacks',
+  post_title: 'throwaway post do not upboat'
+}
+@already_commented = []
+
 def create_bot(username, password)
   RedditKit.sign_in username, password
   RedditKit::Client.new username, password
@@ -25,35 +33,43 @@ def lmgtfy(question)
   URI.encode("http://www.lmgtfy.com/?q=#{question}")
 end
 
-def process_comments(opts = {})
-  bot = create_bot(opts[:username], opts[:password])
-  comments = get_comments_on_post(bot, opts[:post_title])
-  not_replied_to_yet = []
-  comments.first.attributes[:replies][:data][:children].each do |x|
-    not_replied_to_yet << x if x[:data][:author] != opts[:username]
-  end
-  binding.pry
-  not_replied_to_yet.each do |comment|
-    make_comment comment
-  end
-end
-
-def have_commented(comment)
+def have_commented?(comment)
   replies_listing = comment.attributes[:replies]
-  return [] if replies_listing.empty?
+  return false if replies_listing.empty?
   replies_array = replies_listing[:data][:children]
   comment_objects ||= replies_array.map do |comment|
     RedditKit::Comment.new(comment)
   end
-  comment_objects.any?{|x| x.author == 'answer-me-anything'}
+  comment_objects.any?{|x| x.author == @author }
 end
 
+def populate_already_commented(user)
+  comments = get_comments_on_post(user, @opts[:post_title])
+  comments.each do |comment|
+    if have_commented? comment
+      @already_commented << comment.id
+    end
+  end
+end
 
-# TODO sanitize comment input
-# look at body of every comment
-# if there is not already a comment by our bot
-#   if there is a question mark somewhere in the body
-#     google the sentence up to the question mark
-#     comment with the lmgtfy link
+def process_comments(user, opts = {})
+  comments = get_comments_on_post(user, opts[:post_title])
+  comments.each do |comment|
+    if !@already_commented.include? comment.id
+      make_comment comment
+      @already_commented << comment.id
+    end
+  end
+end
 
-
+def search_for_comments
+  bot = create_bot(@opts[:username], @opts[:password])
+  populate_already_commented bot
+  while true
+    # SidekiqQueue.perform_async bot, @opts
+    process_comments(bot, @opts)
+    puts 'processed comments, sleeping'
+    sleep 10
+    puts 'done sleeping'
+  end
+end
