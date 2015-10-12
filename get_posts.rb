@@ -5,24 +5,25 @@ require 'bitly'
 
 Bitly.use_api_version_3
 
-@logger = Logger.new('reddit.log')
 
-@author = 'answer-me-anything'
-@opts = {
-  username: @author,
-  password: 'kenthacks',
-#  post_title: 'throwaway post do not upboat'
-#  post_title: 'We wrote a bot in 2 hours at Kent Hack Enough that will answer any question. AMA'
-  post_title: 'We wrote a bot for Kent Hack Enough that will answer all questions. AUA'
-}
+def initialize
+  @logger = Logger.new('reddit.log')
 
-@client_id = 'answermeanything'
-@client_secret = 'R_ae88288f0f9b45c0bce0893852f1f798'
+  @author = 'answer-me-anything'
+  @opts = {
+    username: @author,
+    password: 'kenthacks',
+    post_title: 'We wrote a bot for Kent Hack Enough that will answer all questions. AUA'
+  }
 
-@already_commented = []
+  @client_id = 'answermeanything'
+  @client_secret = 'R_ae88288f0f9b45c0bce0893852f1f798'
 
-@query_required = ['http://www.lmgtfy.com/?q=', 'https://lmddgtfy.net/?q=', 'http://letmebingthatforyou.com/?q=', 'http://www.wolframalpha.com/input/?i=', 'http://www.letmewikipediathatforyou.com/?q=']
-@no_query_required = ['http://42.com/', 'http://techsmartly.net/freePS3.php']
+  @already_commented = []
+
+  @query_required = ['http://www.lmgtfy.com/?q=', 'https://lmddgtfy.net/?q=', 'http://letmebingthatforyou.com/?q=', 'http://www.wolframalpha.com/input/?i=', 'http://www.letmewikipediathatforyou.com/?q=']
+  @no_query_required = ['http://42.com/', 'http://techsmartly.net/freePS3.php']
+end
 
 def create_bot(username, password)
   RedditKit.sign_in username, password
@@ -93,6 +94,7 @@ def process_comments(user, opts = {})
 end
 
 def search_for_comments
+  initialize
   bot = create_bot(@opts[:username], @opts[:password])
   populate_already_commented bot
   @logger.info("Already commented: #{@already_commented}")
